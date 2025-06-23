@@ -1,17 +1,4 @@
-; TODO: adjust indents to match Refal05 style guide
-
-((function
-  "{" @start
-  "}" @end) @indent)
-
-((call_block
-  "{" @start
-  "}" @end) @indent)
-
-((brackets
-  "(" @start
-  ")" @end) @indent)
-
-((call
-  "<" @start
-  ">" @end) @indent)
+(call "<" ">" @end) @indent
+(function "{" "}" @end) @indent
+(brackets "(" ")" @end) @indent
+(call_block "{" "}" @end) @indent
