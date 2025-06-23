@@ -1,0 +1,11 @@
+name = "Refal5 Syntax Highlighting"
+version = "0.1.0"
+authors = ["Mikhail Butvin <butvin.mihail@yandex.ru>"]
+description = "Refal5 Syntax Highlighting"
+repository = "https://github.com/butvinm/zed-refal5"
+id = "refal5"
+schema_version = 1
+
+[grammars.refal5]
+repository = "https://github.com/butvinm/tree-sitter-refal5"
+commit = "792fbd4ebc17134513b7b30f161283f01d413625"

@@ -1,0 +1,4 @@
+name = "Refal5"
+grammar = "refal5"
+path_suffixes = ["ref"]
+line_comments = ["* "]
