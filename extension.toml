@@ -1,5 +1,5 @@
 name = "Refal5 Syntax Highlighting"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Mikhail Butvin <butvin.mihail@yandex.ru>"]
 description = "Refal5 Syntax Highlighting"
 repository = "https://github.com/butvinm/zed-refal5"
