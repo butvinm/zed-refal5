@@ -8,4 +8,4 @@ schema_version = 1
 
 [grammars.refal5]
 repository = "https://github.com/butvinm/tree-sitter-refal5"
-commit = "792fbd4ebc17134513b7b30f161283f01d413625"
+commit = "e7d4eb4c8e63ada1a0f01b4a03c3204a0b5ade92"
