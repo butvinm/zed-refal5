@@ -1,0 +1,51 @@
+$ENTRY Go {
+  =
+    <Prout 'Empty json:\n'
+      <Json-Parse '0'>
+    >
+    <Prout 'Encoded json:\n'
+      <Json-Stringify
+        (Array
+          (Object ((String 'value') (String 'New')) ((String 'onclick') (String 'New()')))
+          (Object ((String 'value') (String 'Open')) ((String 'onclick') (String 'Open()')))
+        )
+      >
+    >;
+}
+
+
+PrintUsage {
+  e.Program
+    = <Prout 'usage: ' e.Program ' <file.json>  (parses the file and prints it back as JSON)'>
+      <Exit 1>;
+}
+
+
+Parse-Members {
+  Success s.NewLine s.NewCol (e.NewStack (e.Members) t.Member) ',' e.NewContent
+    = <Parse-Members Success s.NewLine
+      <Inc s.NewCol>
+      (e.NewStack (e.Members t.Member))
+      e.NewContent
+    >;
+}
+
+
+Parse-Number {
+  Success s.NewLine s.NewCol (e.NewStack (e.Integer) (e.Fraction) (e.Exponent)) e.NewContent
+    = Success s.NewLine s.NewCol
+      (e.NewStack
+        (Number (<Numb e.Integer>) <NumbOptional e.Fraction> <NumbOptional e.Exponent>)
+      )
+      e.NewContent;
+}
+
+
+Report {
+  e.RetCode
+    =
+      <Prout '*** COMPILATION FAILED: the C compiler exited with a non-zero return code '
+        <Symb e.RetCode>
+      >
+      <Exit e.RetCode>;
+}

@@ -3,3 +3,5 @@ experiment.asm
 grammars
 *.wasm
 corpus/
+.venv/
+__pycache__/

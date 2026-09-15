@@ -1,0 +1,55 @@
+$ENTRY Json-Parse {
+  e.Content
+    , <Parse-Element Success 0 0 () e.Content>
+    : {
+      Success s.Line s.Col (t.Element) /* empty */ = Success t.Element;
+      Fails e.Error = Fails e.Error;
+    };
+}
+
+
+Parse-Member {
+  Success s.Line s.Col t.Stack e.Content
+    , <Parse-Ws <Parse-String <Parse-Ws Success s.Line s.Col t.Stack e.Content>>>
+    : {
+      Success s.NewLine s.NewCol t.NewStack ':' e.NewContent
+        , <Parse-Element Success s.NewLine <Inc s.NewCol> t.NewStack e.NewContent>
+        : {
+          Success s.Line2 s.Col2 (e.Stack2 t.String t.Value) e.Content2
+            = Success s.Line2 s.Col2 (e.Stack2 (t.String t.Value)) e.Content2;
+
+          Fails e.Error = Fails e.Error;
+        };
+
+      Fails e.Error = Fails e.Error;
+    };
+
+  Fails e.Error = Fails e.Error;
+}
+
+
+$ENTRY Go {
+  , <ArgList> : {
+    (e.Exe) (e.File)
+      , <UnwrapLines <LoadFile e.File>> : e.Content
+      , <Json-Parse e.Content>
+      : {
+        Success t.Json = <Print <Json-Stringify t.Json>>;
+        Fails e.Error = <Print e.Error>;
+      };
+
+    e.Other
+      = <Prout 'Usage: test file.json'>;
+  };
+}
+
+
+Unescape {
+  (e.Stack) '\\' s.Char e.Content
+    , s.Char
+    : {
+      '"'    = (e.Stack '"') e.Content;
+      'n'    = (e.Stack '\n') e.Content;
+      s.Char = (e.Stack s.Char) e.Content;
+    };
+}
