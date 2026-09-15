@@ -12,6 +12,29 @@ A Zed extension for Refal-5 with no extension code of its own: `languages/refal5
 - `.venv/bin/python tests/test_indent.py tests/fixtures/blocks.ref`: test one fixture, once `make test` has built `.venv`.
 - In Zed, click Rebuild on the Refal5 card in Extensions (or run `zed: rebuild dev extension`) to load changes, and `zed: open log` to see query or grammar errors.
 
+## Releases
+
+`version` in `extension.toml` is the only release signal. Do not infer releases
+from commit messages, create tags manually, or add a separate release command.
+Keep its line in the form `version = "0.2.2"`: the release job reads this fixed
+format with Bash and sed directly in the workflow, without a separate script.
+When a release is intended, increase the stable `major.minor.patch` version in
+the same changes that are to be released. Manually check that version in Zed
+before pushing or merging it to `master`.
+
+On a push to `master`, CI runs `make test`, then compares the manifest version
+before and after the entire push. An unchanged version only runs tests; a lower
+version fails release validation. PRs never publish. A version increase creates
+a lightweight `v<version>` tag at the tested push commit, a GitHub Release with
+generated notes, and an update PR in `zed-industries/extensions`. CI never edits
+the manifest. A tag created with the workflow token does not need to trigger
+another workflow: all release steps run in the same job.
+
+Re-run a failed workflow after fixing external configuration. Existing tags must
+point to the same commit, and an existing GitHub Release is reused. Do not move
+published tags or reuse version numbers. Acceptance of the registry PR remains
+under Zed's control; a GitHub Release alone does not mean the catalog is updated.
+
 ## Grammar changes
 
 Zed rejects a whole query file that mentions a node the pinned grammar doesn't have. So a grammar change takes two PRs: merge the tree-sitter-refal5 PR first, with a merge commit rather than a squash (a squash creates a new hash), then update `commit` in `extension.toml` here, in the same PR as any query that uses the new nodes. `make test` fails if a query doesn't compile against the pin.

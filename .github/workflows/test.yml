@@ -1,9 +1,12 @@
-name: Test
+name: Test and release
 
 on:
   push:
     branches: [master]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -14,3 +17,77 @@ jobs:
         with:
           python-version: "3.12"
       - run: make test
+
+  release:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Detect manifest version change
+        id: version
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          echo 'changed=false' >> "$GITHUB_OUTPUT"
+          [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]] && exit 0
+          previous=$(git show "$BEFORE_SHA:extension.toml" | sed -n 's/^version = "\([^"]*\)"$/\1/p')
+          current=$(sed -n 's/^version = "\([^"]*\)"$/\1/p' extension.toml)
+          stable='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+          if [[ ! "$previous" =~ $stable || ! "$current" =~ $stable ]]; then
+            echo '::error::Expected version = "major.minor.patch" in extension.toml.'
+            exit 1
+          fi
+          [[ "$previous" == "$current" ]] && exit 0
+          if [[ $(printf '%s\n' "$previous" "$current" | sort -V | tail -n 1) != "$current" ]]; then
+            echo '::error::Release version must increase.'
+            exit 1
+          fi
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+          echo "tag=v$current" >> "$GITHUB_OUTPUT"
+      - name: Check publishing credentials
+        if: steps.version.outputs.changed == 'true'
+        env:
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+        run: |
+          if [ -z "$COMMITTER_TOKEN" ]; then
+            echo '::error::Missing repository secret COMMITTER_TOKEN for submitting the Zed registry PR.'
+            exit 1
+          fi
+      - name: Create tag and GitHub Release
+        if: steps.version.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
+            test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$GITHUB_SHA" || {
+              echo '::error::Release tag already points to another commit.'
+              exit 1
+            }
+          else
+            git tag "$RELEASE_TAG" "$GITHUB_SHA"
+            git push origin "refs/tags/$RELEASE_TAG"
+          fi
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --verify-tag --generate-notes --title "$RELEASE_TAG"
+          fi
+      - name: Submit update to Zed registry
+        if: steps.version.outputs.changed == 'true'
+        uses: huacnlee/zed-extension-action@82920ff0876879f65ffbcfa3403589114a8919c6 # v2
+        with:
+          extension-name: refal5
+          push-to: butvinm/extensions
+          tag: ${{ steps.version.outputs.tag }}
+          create-pullrequest: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
