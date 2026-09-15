@@ -1,0 +1,25 @@
+Compile {
+  (Source (e.Source) e.OutputName)
+    , <Prout '*Compiling ' e.Source ':'>
+      <Parse-File e.Source>
+    : {
+      Success e.Tree = <Generate-ToFile (e.OutputName) e.Tree> (e.OutputName);
+
+      Fails e.Errors = <Map (WriteError e.Source) e.Errors> Fails;
+    };
+
+  e.Other
+    , <Prout 'Skipping ' e.Other>
+      <Log e.Other>
+    : e.Result
+    = e.Result;
+}
+
+
+Open {
+  e.File
+    , <Open 'r' 7 e.File> : /* empty */
+    , <Get 7>
+    : e.Source
+    = <Eval (e.File) e.Source>;
+}

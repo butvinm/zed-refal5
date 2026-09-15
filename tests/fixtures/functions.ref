@@ -1,0 +1,26 @@
+*$FROM LibraryEx
+$EXTERN ArgList, LoadFile;
+
+
+/**
+<Escape e.String> == s.CHAR*
+*/
+$ENTRY Escape {
+  '"' e.String = '\\"' <Escape e.String>;
+  '\\' e.String = '\\\\' <Escape e.String>;
+  '\n' e.String = '\\n' <Escape e.String>;
+  s.Char e.String = s.Char <Escape e.String>;
+  /* empty */ = /* empty */;
+}
+
+
+MapJoin {
+  t.Func s.Del /* empty */ = /* empty */;
+  t.Func s.Del t.Item = <Mu t.Func t.Item>;
+  t.Func s.Del t.Item e.Items = <Mu t.Func t.Item> s.Del <MapJoin t.Func s.Del e.Items>;
+}
+
+
+Inc {
+  s.A = <Add 1 s.A>;
+}

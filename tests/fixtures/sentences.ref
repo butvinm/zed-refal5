@@ -1,0 +1,44 @@
+Parse-Value {
+  Success s.Line s.Col t.Stack '{' e.Content
+    = <Parse-Object Success s.Line s.Col t.Stack '{' e.Content>;
+
+  Success s.Line s.Col t.Stack s.Char e.Content
+    , <Type s.Char> : 'D' e.1
+    = <Parse-Number Success s.Line s.Col t.Stack s.Char e.Content>;
+
+  Success s.Line s.Col (e.Stack) 'true' e.Content
+    = Success s.Line <Add 4 s.Col> (e.Stack True) e.Content;
+
+  Fails e.Error = Fails e.Error;
+}
+
+
+Parse-Array {
+  Success s.Line s.Col t.Stack '[' e.Content
+    , <Parse-Ws Success s.Line <Inc s.Col> t.Stack e.Content>
+    : Success s.NewLine s.NewCol (e.NewStack) ']' e.NewContent
+    = Success s.NewLine <Inc s.NewCol> (e.NewStack (Array /* empty */)) e.NewContent;
+
+  Fails e.Error = Fails e.Error;
+}
+
+
+Parse-Exponent {
+  Success s.Line s.Col (e.Stack) s.E s.Char e.Content
+    , <Upper s.E> : 'E'
+    , <Type s.Char> : 'D' e.1
+    = <Parse-Digits Success s.Line s.Col (e.Stack ()) s.Char e.Content>;
+}
+
+
+PrintError {
+  e.Msg
+    =
+      <Prout 'error: ' e.Msg>
+      <Exit 1>;
+}
+
+
+$ENTRY Go {
+  = <Prout 'Hello'>;
+}
