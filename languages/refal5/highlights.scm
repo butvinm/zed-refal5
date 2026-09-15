@@ -14,6 +14,7 @@
 (macrodigit) @number
 (chars) @string
 (compound) @string
+(escape) @string.escape
 
 [
   "="
