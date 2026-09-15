@@ -9,6 +9,7 @@ STAMP := $(VENV)/.grammar-$(GRAMMAR_COMMIT)
 
 test: $(STAMP)
 	$(VENV)/bin/python tests/test_indent.py
+	$(VENV)/bin/python tests/test_outline.py
 
 # tree-sitter is pinned because 0.26.0 crashes on Python 3.14
 $(STAMP):
