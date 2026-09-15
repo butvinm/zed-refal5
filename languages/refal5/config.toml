@@ -1,6 +1,6 @@
 name = "Refal5"
 grammar = "refal5"
-path_suffixes = ["ref"]
+path_suffixes = ["ref", "refal"]
 word_characters = ["-", "."]
 line_comments = ["* "]
 block_comment = ["/*", " */"]
