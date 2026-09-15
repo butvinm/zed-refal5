@@ -1,7 +1,7 @@
-name = "Refal5 Syntax Highlighting"
+name = "Refal5"
 version = "0.2.2"
 authors = ["Mikhail Butvin <butvin.mikhail@gmail.com>"]
-description = "Refal5 Syntax Highlighting"
+description = "Refal5 language support with syntax highlighting, comment toggling, auto-indentation, and code outline."
 repository = "https://github.com/butvinm/zed-refal5"
 id = "refal5"
 schema_version = 1

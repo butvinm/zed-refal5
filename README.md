@@ -1,6 +1,6 @@
-# Zed Refal5 Syntax Highlighting
+# Refal5 for Zed
 
-Extension for [Zed](https://zed.dev) that adds [Refal5](https://en.wikipedia.org/wiki/Refal) syntax highlighting
+[Refal5](https://en.wikipedia.org/wiki/Refal) language support for [Zed](https://zed.dev), including syntax highlighting, comment toggling, auto-indentation, and code outline.
 
 ## Installation
 
