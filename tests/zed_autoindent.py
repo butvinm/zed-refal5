@@ -1,7 +1,7 @@
 """A replay of Zed's auto-indent, to test languages/refal5/indents.scm without running Zed.
 
 Ported from Buffer::suggest_autoindents and Buffer::compute_autoindents in Zed's crates/language/src/buffer.rs:
-https://github.com/zed-industries/zed/blob/v1.19.2/crates/language/src/buffer.rs
+https://github.com/zed-industries/zed/blob/v1.21.0/crates/language/src/buffer.rs
 
 Only what this extension uses is ported: the @indent, @start, @end and @outdent captures, the (ERROR) guard, and Zed's default auto_indent_using_last_non_empty_line = true. Line-pattern rules such as increase_indent_pattern are not ported.
 
@@ -14,7 +14,7 @@ from pathlib import Path
 import tree_sitter_refal5
 from tree_sitter import Language, Parser, Query, QueryCursor
 
-ZED_VERSION = "1.19.2"
+ZED_VERSION = "1.21.0"
 
 LANGUAGE = Language(tree_sitter_refal5.language())
 PARSER = Parser(LANGUAGE)
